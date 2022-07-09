@@ -2,3 +2,4 @@ main: xyz.hyperspark.slayer.Main
 name: Slayer
 version: 0.0.1
 api-version: 1.19
+depend: [Vault]
