@@ -1,0 +1,11 @@
+name: Build plugin
+on: push
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container: gradle:jdk17
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Execute Gradle build
+        run: ./gradlew shadowJar

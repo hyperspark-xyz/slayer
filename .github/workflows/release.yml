@@ -1,0 +1,21 @@
+name: Release
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: gradle:jdk17
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Execute Gradle build
+        run: ./gradlew shadowJar
+      - name: Rename output
+        run: mv build/libs/slayer-1.0-SNAPSHOT.jar build/libs/slayer-$GITHUB_REF_NAME.jar
+      - name: Upload Artifacts
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/libs/slayer-*.jar"
