@@ -59,7 +59,7 @@ data class Winners (
 
 private fun calculateWinners(scores: Map<PlayerId, Points>): Winners {
     val topThreeEntries = scores.toList()
-        .sortedBy { (_, value) -> value }
+        .sortedByDescending { (_, value) -> value }
         .map { Some(it) }
         .take(3)
 
