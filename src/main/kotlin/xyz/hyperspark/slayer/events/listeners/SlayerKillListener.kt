@@ -38,11 +38,12 @@ class SlayerKillListener(
 
     @EventHandler
     fun onKill(evt: EntityDeathEvent) {
-        if (!evt.entity.hasMetadata("SPAWN_REASON")) return
-        if (evt.entity.getMetadata("SPAWN_REASON").any { (it.value() as CreatureSpawnEvent.SpawnReason) === CreatureSpawnEvent.SpawnReason.SPAWNER }) return
         if (slayerState.status == SlayerStatus.NotInProgress) return
 
         if (evt.entity is Monster) {
+            if (!evt.entity.hasMetadata(SlayerMobSpawnListener.MetadataKey)) return
+            if (evt.entity.getMetadata(SlayerMobSpawnListener.MetadataKey).any { (it.value() as CreatureSpawnEvent.SpawnReason) === CreatureSpawnEvent.SpawnReason.SPAWNER }) return
+
             val killer = evt.entity.killer ?: return
             val playerId = PlayerId(killer.uniqueId)
 

@@ -46,8 +46,6 @@ private val SecondPlacePrize: Double = 200.0
 private val ThirdPlacePrize: Double = 100.0
 private val ParticipationPrize: Double = 20.0
 
-data class PlayerName(val value: String)
-
 data class TopThree(
     val first: Option<Pair<PlayerId, Points>>,
     val second: Option<Pair<PlayerId, Points>>,
@@ -65,9 +63,11 @@ private fun calculateWinners(scores: Map<PlayerId, Points>): Winners {
         .map { Some(it) }
         .take(3)
 
+    val topThreeIds = topThreeEntries.map { it.value.first }
+
     val killedSomething = scores
         .filter { (_, score) -> score.value > 0 }
-        .filter { (playerId, _) -> !topThreeEntries.any { it.value.first == playerId } }
+        .filter { (playerId, _) -> !topThreeIds.contains(playerId) }
         .keys;
 
     return Winners(
@@ -103,14 +103,14 @@ private fun announceFinish(pluginTag: String, players: Set<Player>, topThree: To
         val (second) = topThree.second as Some
         val (id, points) = second
         val name = playersById[id.value]?.name ?: "Unknown"
-        sb.appendLine("1. $name (${points.value})")
+        sb.appendLine("2. $name (${points.value})")
     }
 
     if (topThree.third.isDefined()) {
         val (third) = topThree.third as Some
         val (id, points) = third
         val name = playersById[id.value]?.name ?: "Unknown"
-        sb.appendLine("1. $name (${points.value})")
+        sb.appendLine("3. $name (${points.value})")
     }
 
     val message = sb.toString()

@@ -9,8 +9,12 @@ import org.bukkit.plugin.Plugin
 class SlayerMobSpawnListener(
     private val plugin: Plugin
 ): Listener {
+    companion object SlayerMobSpawnListener {
+        const val MetadataKey = "SPAWN_REASON"
+    }
+
     @EventHandler
     fun onMobSpawn(evt: CreatureSpawnEvent) {
-        evt.entity.setMetadata("SPAWN_REASON", FixedMetadataValue(plugin, evt.spawnReason))
+        evt.entity.setMetadata(MetadataKey, FixedMetadataValue(plugin, evt.spawnReason))
     }
 }
