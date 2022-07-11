@@ -129,14 +129,14 @@ private fun announceFinish(pluginTag: String, players: Set<Player>, winners: Win
         val (second) = topThree.second as Some
         val (id, scoreCard) = second
         val name = playersById[id.value]?.name ?: "Unknown"
-        sb.appendLine("2. $name (${scoreCard.pointsTotal.value})")
+        sb.appendLine("2. ${ChatColor.BOLD}$name${ChatColor.RESET} (${scoreCard.pointsTotal.value})")
     }
 
     if (topThree.third.isDefined()) {
         val (third) = topThree.third as Some
         val (id, scoreCard) = third
         val name = playersById[id.value]?.name ?: "Unknown"
-        sb.appendLine("3. $name (${scoreCard.pointsTotal.value})")
+        sb.appendLine("3. ${ChatColor.BOLD}$name${ChatColor.RESET} (${scoreCard.pointsTotal.value})")
     }
 
     val message = sb.toString()
