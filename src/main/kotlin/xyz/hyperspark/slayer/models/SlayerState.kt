@@ -7,11 +7,18 @@ data class Points(val value: Long): Comparable<Points> {
 
 }
 data class PlayerId(val value: UUID)
+
+data class ScoreCard(
+    val pointsTotal: Points,
+    val kills: List<Kill>,
+)
+
 enum class SlayerStatus {
     InProgress,
     NotInProgress,
 }
-data class SlayerState(val scores: MutableMap<PlayerId, Points>, var status: SlayerStatus) {
+
+data class SlayerState(val scores: MutableMap<PlayerId, ScoreCard>, var status: SlayerStatus) {
     fun reset() {
         this.scores.clear()
         this.status = SlayerStatus.NotInProgress

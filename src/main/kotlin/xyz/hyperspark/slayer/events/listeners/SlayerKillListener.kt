@@ -1,16 +1,15 @@
 package xyz.hyperspark.slayer.events.listeners
 
-import org.bukkit.ChatColor
+import net.md_5.bungee.api.ChatMessageType
+import net.md_5.bungee.api.chat.BaseComponent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.EntityDeathEvent
-import xyz.hyperspark.slayer.models.PlayerId
-import xyz.hyperspark.slayer.models.Points
-import xyz.hyperspark.slayer.models.SlayerState
-import xyz.hyperspark.slayer.models.SlayerStatus
+import xyz.hyperspark.slayer.models.*
 
 class SlayerKillListener(
     private val pluginTag: String,
@@ -36,6 +35,24 @@ class SlayerKillListener(
             Pair(EntityType.WARDEN, Points(0)),
         )
 
+    private fun getPointsForKill(kill: Kill): Points {
+        return killScores[kill.entityType] ?: Points(10)
+    }
+
+    private fun addKillToScoreCard(scoreCard: ScoreCard, kill: Kill): ScoreCard {
+        val currentPoints = scoreCard.pointsTotal
+        val currentKills = scoreCard.kills
+        val pointsToAward = getPointsForKill(kill)
+
+        val newPoints = currentPoints.copy(value = currentPoints.value + pointsToAward.value)
+        val newKills = currentKills + kill
+
+        return scoreCard.copy(
+            pointsTotal = newPoints,
+            kills = newKills
+        )
+    }
+
     @EventHandler
     fun onKill(evt: EntityDeathEvent) {
         if (slayerState.status == SlayerStatus.NotInProgress) return
@@ -45,15 +62,23 @@ class SlayerKillListener(
             if (evt.entity.getMetadata(SlayerMobSpawnListener.MetadataKey).any { (it.value() as CreatureSpawnEvent.SpawnReason) === CreatureSpawnEvent.SpawnReason.SPAWNER }) return
 
             val killer = evt.entity.killer ?: return
+            val entityType = evt.entityType
             val playerId = PlayerId(killer.uniqueId)
 
-            val currentPoints = slayerState.scores[playerId] ?: Points(0)
-            val pointsToAward = killScores[evt.entityType] ?: Points(10)
-            val newPoints = currentPoints.copy(value = currentPoints.value + pointsToAward.value)
+            val scoreCard = slayerState.scores[playerId] ?: ScoreCard(Points(0), listOf())
+            val kill = Kill(playerId, entityType)
 
-            killer.sendMessage("$pluginTag You killed a ${evt.entityType.name.lowercase().replaceFirstChar { it.uppercase() }}! +${pointsToAward.value} points!")
+            slayerState.scores[playerId] = addKillToScoreCard(scoreCard, kill)
 
-            slayerState.scores[playerId] = newPoints
+            val pointsForKill = getPointsForKill(kill)
+            val chatComponent = TextComponent.fromLegacyText(
+                "$pluginTag You killed a ${evt.entityType.name.lowercase().replaceFirstChar { it.uppercase() }}! +${pointsForKill.value} points!"
+            )
+
+            killer.spigot().sendMessage(
+                ChatMessageType.ACTION_BAR,
+                *chatComponent
+            )
         }
     }
 }
