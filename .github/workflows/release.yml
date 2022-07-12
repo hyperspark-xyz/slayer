@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Version build
+        run: 'sed "s/^version: .*/version: ${{github.ref_name}}/" src/main/resources/plugin.yml'
+      - name: Print plugin.yml
+        run: "cat src/main/resources/plugin.yml"
       - name: Execute Gradle build
         run: ./gradlew shadowJar
       - name: Rename output
