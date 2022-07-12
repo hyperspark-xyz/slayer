@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Version build
-        run: 'sed -i "s/^version: .*/version: ${{github.ref_name}}/" src/main/resources/plugin.yml'
+        run: 'sed -i "s/^version: .*/version: $GITHUB_REF_NAME/" src/main/resources/plugin.yml'
       - name: Execute Gradle build
         run: ./gradlew shadowJar
       - name: Rename output
