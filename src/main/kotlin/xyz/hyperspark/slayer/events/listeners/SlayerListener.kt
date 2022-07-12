@@ -125,8 +125,6 @@ private fun announceFinish(pluginTag: String, players: Set<Player>, winners: Win
         sb.appendLine(killSummary) // Only for champ
     }
 
-    val message = sb.toString()
-
     if (topThree.second.isDefined()) {
         val (second) = topThree.second as Some
         val (id, scoreCard) = second
@@ -153,6 +151,8 @@ private fun announceFinish(pluginTag: String, players: Set<Player>, winners: Win
         .fold(emptyMap<PlayerId, ScoreCard>()) { acc, item ->
             item.fold({ acc }, { acc + it })
         }
+
+    val message = sb.toString()
 
     players.forEach {
         val playerSb = StringBuilder()
