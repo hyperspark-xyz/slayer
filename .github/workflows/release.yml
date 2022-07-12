@@ -15,11 +15,11 @@ jobs:
         run: 'sed "s/^version: .*/version: ${{github.ref_name}}/" src/main/resources/plugin.yml'
       - name: Print plugin.yml
         run: "cat src/main/resources/plugin.yml"
-      - name: Execute Gradle build
-        run: ./gradlew shadowJar
-      - name: Rename output
-        run: mv build/libs/slayer-1.0-SNAPSHOT.jar build/libs/slayer-$GITHUB_REF_NAME.jar
-      - name: Upload Artifacts
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/libs/slayer-*.jar"
+#      - name: Execute Gradle build
+#        run: ./gradlew shadowJar
+#      - name: Rename output
+#        run: mv build/libs/slayer-1.0-SNAPSHOT.jar build/libs/slayer-$GITHUB_REF_NAME.jar
+#      - name: Upload Artifacts
+#        uses: ncipollo/release-action@v1
+#        with:
+#          artifacts: "build/libs/slayer-*.jar"
