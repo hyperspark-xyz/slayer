@@ -125,10 +125,13 @@ private fun announceFinish(pluginTag: String, players: Set<Player>, winners: Win
         sb.appendLine(killSummary) // Only for champ
     }
 
+    val message = sb.toString()
+
     if (topThree.second.isDefined()) {
         val (second) = topThree.second as Some
         val (id, scoreCard) = second
         val name = playersById[id.value]?.name ?: "Unknown"
+
         sb.appendLine("2. ${ChatColor.BOLD}$name${ChatColor.RESET} (${scoreCard.pointsTotal.value})")
     }
 
@@ -136,15 +139,26 @@ private fun announceFinish(pluginTag: String, players: Set<Player>, winners: Win
         val (third) = topThree.third as Some
         val (id, scoreCard) = third
         val name = playersById[id.value]?.name ?: "Unknown"
+
         sb.appendLine("3. ${ChatColor.BOLD}$name${ChatColor.RESET} (${scoreCard.pointsTotal.value})")
     }
 
-    val message = sb.toString()
+    val nonWinners = (winners.killedSomething
+        .toList()
+        // Convert each Pair<A, B> to an Option<Pair<A, B>>
+        .map<Pair<PlayerId, ScoreCard>, Option<Pair<PlayerId, ScoreCard>>> { Some(it) } +
+            topThree.second + // Add second place
+            topThree.third) // Add third place.
+        // Remove Nones and produce a set
+        .fold(emptyMap<PlayerId, ScoreCard>()) { acc, item ->
+            item.fold({ acc }, { acc + it })
+        }
 
     players.forEach {
         val playerSb = StringBuilder()
+
         val maybeParticipantCard = Option.fromNullable(
-            winners.killedSomething[PlayerId(it.uniqueId)]
+            nonWinners[PlayerId(it.uniqueId)]
         )
 
         playerSb.appendLine(message)
